@@ -2,6 +2,8 @@
 
 namespace ProcessWire;
 
+use RockLiteApi\API;
+
 /**
  * @author Bernhard Baumrock, 17.11.2022
  * @license COMMERCIAL DO NOT DISTRIBUTE
@@ -9,15 +11,14 @@ namespace ProcessWire;
  */
 class RockLite extends WireData implements Module, ConfigurableModule
 {
-  public $http = false;
-  public $url;
-  public $apikey;
+  public $api = false;
+  public $apikey = false;
 
   public static function getModuleInfo()
   {
     return [
       'title' => 'RockLite',
-      'version' => '1.0.0',
+      'version' => '1.0.1',
       'summary' => 'MailerLite Integration',
       'autoload' => true,
       'singular' => true,
@@ -27,52 +28,11 @@ class RockLite extends WireData implements Module, ConfigurableModule
     ];
   }
 
-  public function init()
+  public function api(): API
   {
-    $this->url = "https://connect.mailerlite.com/";
-  }
-
-  /** ##### public api ##### */
-
-  public function get($url)
-  {
-    return json_decode(
-      $this->http()->get($this->url($url))
-    );
-  }
-
-  public function post($url, $data)
-  {
-    return json_decode(
-      $this->http()->post($this->url($url), json_encode($data))
-    );
-  }
-
-  public function subscribe($mail, $fields = [], $groups = [])
-  {
-    return $this->post("/api/subscribers", [
-      'email' => $mail,
-      'fields' => (object)$fields,
-      'groups' => $groups,
-    ]);
-  }
-
-  /** ##### internal ##### */
-
-  public function http(): WireHttp
-  {
-    if ($this->http) return $this->http;
-    /** @var WireHttp $http */
-    $http = $this->wire(new WireHttp());
-    $http->setHeader('Content-Type', 'application/json');
-    $http->setHeader('Accept', 'application/json');
-    $http->setHeader('Authorization', 'Bearer ' . $this->apikey);
-    return $this->http = $http;
-  }
-
-  public function url($url)
-  {
-    return $this->url . ltrim($url, "/");
+    require_once __DIR__ . "/API.php";
+    if ($this->api) return $this->api;
+    return $this->api = new API($this);
   }
 
   /**
