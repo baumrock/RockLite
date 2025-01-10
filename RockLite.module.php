@@ -6,7 +6,7 @@ use RockLiteApi\API;
 
 /**
  * @author Bernhard Baumrock, 17.11.2022
- * @license COMMERCIAL DO NOT DISTRIBUTE
+ * @license MIT
  * @link https://www.baumrock.com
  */
 class RockLite extends WireData implements Module, ConfigurableModule
